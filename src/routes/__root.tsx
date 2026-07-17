@@ -110,16 +110,26 @@ function RootShell({ children }: { children: ReactNode }) {
 function SiteHeader() {
   return (
     <header className="border-b border-border bg-background">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link to="/" className="text-2xl tracking-wide">
-          <span className="italic">Gexcite</span>
-        </Link>
-        <nav className="flex items-center gap-6 text-sm">
-          <Link to="/" className="hover:underline">Home</Link>
-          <Link to="/about" className="hover:underline">About</Link>
-          <Link to="/find-leads" className="hover:underline">Find Leads</Link>
-          <Link to="/auth" className="rounded-md border border-border px-3 py-1.5 hover:bg-accent">Sign in</Link>
-        </nav>
+      <div className="mx-auto max-w-6xl px-6">
+        <div className="flex items-center justify-between py-5">
+          <Link to="/" className="group flex items-baseline gap-2">
+            <span className="text-3xl italic tracking-tight">Gexcite</span>
+            <span className="text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
+              &mdash; est. 2026
+            </span>
+          </Link>
+          <nav className="flex items-center gap-8 text-sm">
+            <Link to="/" className="italic hover:underline underline-offset-4">Home</Link>
+            <Link to="/about" className="italic hover:underline underline-offset-4">About</Link>
+            <Link to="/find-leads" className="italic hover:underline underline-offset-4">Find Leads</Link>
+            <Link
+              to="/auth"
+              className="border border-foreground px-4 py-1.5 italic hover:bg-foreground hover:text-background"
+            >
+              Sign in →
+            </Link>
+          </nav>
+        </div>
       </div>
     </header>
   );
@@ -127,8 +137,39 @@ function SiteHeader() {
 
 function SiteFooter() {
   return (
-    <footer className="mt-16 border-t border-border py-8 text-center text-sm text-muted-foreground">
-      &copy; {new Date().getFullYear()} Gexcite. Real leads, powered by AI.
+    <footer className="mt-16 border-t border-border bg-background">
+      <div className="mx-auto max-w-6xl px-6 py-14">
+        <div className="grid gap-10 md:grid-cols-3">
+          <div>
+            <p className="text-3xl italic">Gexcite</p>
+            <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
+              A small machine that reads the web, so you can spend your
+              afternoons writing better emails.
+            </p>
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-[0.35em] text-muted-foreground">Pages</p>
+            <ul className="mt-4 space-y-2 text-sm italic">
+              <li><Link to="/" className="hover:underline underline-offset-4">Home</Link></li>
+              <li><Link to="/about" className="hover:underline underline-offset-4">About</Link></li>
+              <li><Link to="/find-leads" className="hover:underline underline-offset-4">Find Leads</Link></li>
+              <li><Link to="/auth" className="hover:underline underline-offset-4">Sign in</Link></li>
+            </ul>
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-[0.35em] text-muted-foreground">Colophon</p>
+            <p className="mt-4 text-sm italic leading-relaxed text-muted-foreground">
+              Set in Times New Roman.<br />
+              Printed in dark grey &amp; white.<br />
+              Powered by curiosity, and a large language model.
+            </p>
+          </div>
+        </div>
+        <div className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6 text-xs uppercase tracking-[0.3em] text-muted-foreground">
+          <span>&copy; {new Date().getFullYear()} Gexcite</span>
+          <span className="italic normal-case tracking-normal">Real leads, quietly gathered.</span>
+        </div>
+      </div>
     </footer>
   );
 }
