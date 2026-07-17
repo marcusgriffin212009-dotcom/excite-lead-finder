@@ -107,9 +107,20 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+function TopBar() {
+  return (
+    <div className="border-b border-border bg-card text-card-foreground">
+      <div className="mx-auto max-w-6xl px-6 py-2 text-center text-xs uppercase tracking-[0.35em]">
+        Founded by Marcus R. Griffin
+      </div>
+    </div>
+  );
+}
+
 function SiteHeader() {
   return (
     <header className="border-b border-border bg-background">
+      <TopBar />
       <div className="mx-auto max-w-6xl px-6">
         <div className="flex items-center justify-between py-5">
           <Link to="/" className="group flex items-baseline gap-2">
