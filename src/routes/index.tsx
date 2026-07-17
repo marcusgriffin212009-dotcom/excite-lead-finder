@@ -59,7 +59,7 @@ function Index() {
               </Link>
             </div>
             <p className="mt-6 text-xs uppercase tracking-[0.3em] text-muted-foreground">
-              Fourteen days, gratis · then twenty-nine dollars a month
+              Fourteen days, gratis · then fifty dollars a month
             </p>
           </div>
 
@@ -207,7 +207,7 @@ function Index() {
             Subscription
           </p>
           <h2 className="mt-4 text-5xl italic md:text-6xl">
-            Twenty-nine dollars, monthly.
+            Fifty dollars, monthly.
           </h2>
           <p className="mx-auto mt-6 max-w-xl leading-relaxed text-muted-foreground">
             Begin with a fortnight, gratis. After that, a modest sum for
