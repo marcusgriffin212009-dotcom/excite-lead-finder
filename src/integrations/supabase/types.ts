@@ -14,7 +14,87 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      leads: {
+        Row: {
+          company_name: string
+          contact_hint: string | null
+          contact_person: string | null
+          created_at: string
+          id: string
+          industry: string | null
+          location: string | null
+          reason: string | null
+          role: string | null
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          company_name: string
+          contact_hint?: string | null
+          contact_person?: string | null
+          created_at?: string
+          id?: string
+          industry?: string | null
+          location?: string | null
+          reason?: string | null
+          role?: string | null
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          company_name?: string
+          contact_hint?: string | null
+          contact_person?: string | null
+          created_at?: string
+          id?: string
+          industry?: string | null
+          location?: string | null
+          reason?: string | null
+          role?: string | null
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          business_type: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          onboarded: boolean
+          product: string | null
+          target_customer: string | null
+          trial_ends_at: string
+          updated_at: string
+        }
+        Insert: {
+          business_type?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          onboarded?: boolean
+          product?: string | null
+          target_customer?: string | null
+          trial_ends_at?: string
+          updated_at?: string
+        }
+        Update: {
+          business_type?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          onboarded?: boolean
+          product?: string | null
+          target_customer?: string | null
+          trial_ends_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
