@@ -27,7 +27,7 @@ export const findLeads = createServerFn({ method: "POST" })
     const apiKey = process.env.LOVABLE_API_KEY;
     if (!apiKey) throw new Error("LOVABLE_API_KEY not configured");
 
-    const system = `You are Gexcite, an AI sales prospecting assistant. Given a small business's profile, return a JSON array of REAL, publicly-known companies that plausibly match the ideal customer profile. Only include companies that actually exist in the public web/knowledge. Do NOT invent contact emails or phone numbers. For contact_hint, describe how to reach out (e.g. "Contact via their website contact form" or "Reach out via LinkedIn to their Head of Marketing"). Return ONLY valid JSON, no prose, no markdown.`;
+    const system = `You are leadlurex, an AI sales prospecting assistant. Given a small business's profile, return a JSON array of REAL, publicly-known companies that plausibly match the ideal customer profile. Only include companies that actually exist in the public web/knowledge. Do NOT invent contact emails or phone numbers. For contact_hint, describe how to reach out (e.g. "Contact via their website contact form" or "Reach out via LinkedIn to their Head of Marketing"). Return ONLY valid JSON, no prose, no markdown.`;
 
     const user = `My business:
 - Business type: ${data.businessType}

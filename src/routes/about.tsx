@@ -3,10 +3,10 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About Gexcite — AI Lead Finder" },
-      { name: "description", content: "Learn how Gexcite uses AI to help small businesses find real sales leads." },
-      { property: "og:title", content: "About Gexcite" },
-      { property: "og:description", content: "How Gexcite finds real leads for your business." },
+      { title: "About leadlurex — AI Lead Finder" },
+      { name: "description", content: "Learn how leadlurex uses AI to help small businesses find real sales leads." },
+      { property: "og:title", content: "About leadlurex" },
+      { property: "og:description", content: "How leadlurex finds real leads for your business." },
       { property: "og:image", content: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200" },
     ],
   }),
@@ -42,7 +42,7 @@ function About() {
             <span className="italic">Knowing who to sell to</span> is harder.
           </h1>
           <p className="mt-8 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-            Gexcite was built for the founder at the kitchen table, the
+            leadlurex was built for the founder at the kitchen table, the
             freelancer between clients, the two-person studio wondering how
             the sales pipeline is supposed to fill itself. It won't cold-call
             for you. It will, however, read the internet quite carefully.
@@ -78,7 +78,7 @@ function About() {
               short list of real companies with a written argument for each.
             </p>
             <p className="mt-6 leading-relaxed">
-              Tell Gexcite what you make and who it's for. It will do the
+              Tell leadlurex what you make and who it's for. It will do the
               rest — patiently, and without the sales-tech theatrics.
             </p>
           </div>
@@ -112,7 +112,7 @@ function About() {
           <div className="mt-12 grid gap-10 md:grid-cols-3">
             {[
               { n: "I.", t: "Answer a few questions", b: "Business type, product, and target customer. Five minutes, tops." },
-              { n: "II.", t: "The machine reads", b: "Gexcite scans directories, press, and hiring signals for a fit." },
+              { n: "II.", t: "The machine reads", b: "leadlurex scans directories, press, and hiring signals for a fit." },
               { n: "III.", t: "You write the email", b: "Each lead arrives with company, role, and a paragraph of reasoning." },
             ].map((s) => (
               <div key={s.n} className="border-t border-border pt-6">
@@ -142,7 +142,7 @@ function About() {
                 to begin.
               </p>
               <p className="mt-6 text-xs uppercase tracking-[0.3em] text-card-foreground/60">
-                — from the Gexcite handbook
+                — from the leadlurex handbook
               </p>
             </div>
           </div>
