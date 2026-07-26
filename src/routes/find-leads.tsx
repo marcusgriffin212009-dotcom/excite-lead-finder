@@ -7,8 +7,8 @@ import { findLeads } from "@/lib/leads.functions";
 export const Route = createFileRoute("/find-leads")({
   head: () => ({
     meta: [
-      { title: "Find Leads — Gexcite" },
-      { name: "description", content: "Answer a few questions and let Gexcite find real leads for your business." },
+      { title: "Find Leads — leadlurex" },
+      { name: "description", content: "Answer a few questions and let leadlurex find real leads for your business." },
     ],
   }),
   component: FindLeadsPage,
@@ -155,7 +155,7 @@ function FindLeadsPage() {
 
       {loading && (
         <p className="mt-8 text-center text-muted-foreground">
-          Gexcite is scanning public company data. This can take up to a minute...
+          leadlurex is scanning public company data. This can take up to a minute...
         </p>
       )}
 

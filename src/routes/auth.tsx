@@ -6,8 +6,8 @@ import { lovable } from "@/integrations/lovable/index";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in to Gexcite" },
-      { name: "description", content: "Sign in or start your Gexcite free trial." },
+      { title: "Sign in to leadlurex" },
+      { name: "description", content: "Sign in or start your leadlurex free trial." },
     ],
   }),
   component: AuthPage,
@@ -141,7 +141,7 @@ function AuthPage() {
         </form>
 
         <p className="mt-6 text-center text-sm">
-          {mode === "signup" ? "Already have an account?" : "New to Gexcite?"}{" "}
+          {mode === "signup" ? "Already have an account?" : "New to leadlurex?"}{" "}
           <button
             onClick={() => setMode(mode === "signup" ? "signin" : "signup")}
             className="underline"

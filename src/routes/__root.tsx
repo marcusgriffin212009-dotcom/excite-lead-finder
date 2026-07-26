@@ -75,9 +75,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Gexcite — AI Lead Finder for Your Business" },
-      { name: "description", content: "Gexcite is an AI-powered lead finding platform that surfaces real prospective customers for your business." },
-      { property: "og:title", content: "Gexcite — AI Lead Finder" },
+      { title: "leadlurex — AI Lead Finder for Your Business" },
+      { name: "description", content: "leadlurex is an AI-powered lead finding platform that surfaces real prospective customers for your business." },
+      { property: "og:title", content: "leadlurex — AI Lead Finder" },
       { property: "og:description", content: "Find real leads for your business with AI." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -124,7 +124,7 @@ function SiteHeader() {
       <div className="mx-auto max-w-6xl px-6">
         <div className="flex items-center justify-between py-5">
           <Link to="/" className="group flex items-baseline gap-2">
-            <span className="text-3xl italic tracking-tight">Gexcite</span>
+            <span className="text-3xl italic tracking-tight">leadlurex</span>
             <span className="text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
               &mdash; est. 2026
             </span>
@@ -152,7 +152,7 @@ function SiteFooter() {
       <div className="mx-auto max-w-6xl px-6 py-14">
         <div className="grid gap-10 md:grid-cols-3">
           <div>
-            <p className="text-3xl italic">Gexcite</p>
+            <p className="text-3xl italic">leadlurex</p>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
               A small machine that reads the web, so you can spend your
               afternoons writing better emails.
@@ -177,7 +177,7 @@ function SiteFooter() {
           </div>
         </div>
         <div className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6 text-xs uppercase tracking-[0.3em] text-muted-foreground">
-          <span>&copy; {new Date().getFullYear()} Gexcite</span>
+          <span>&copy; {new Date().getFullYear()} leadlurex</span>
           <span className="italic normal-case tracking-normal">Real leads, quietly gathered.</span>
         </div>
       </div>

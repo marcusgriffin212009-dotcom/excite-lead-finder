@@ -38,7 +38,7 @@ function Index() {
               <span className="italic">right</span> person to sell to.
             </h1>
             <p className="mt-8 max-w-xl text-lg leading-relaxed text-muted-foreground">
-              <span className="text-foreground">Gexcite</span> is a small,
+              <span className="text-foreground">leadlurex</span> is a small,
               curious machine. Tell it about your business — what you make,
               who it's for — and it will comb the open web for real
               companies who ought to be hearing from you.
@@ -108,7 +108,7 @@ function Index() {
                 A methodical little<br /><span className="italic">prospector.</span>
               </h2>
               <p className="mt-6 leading-relaxed">
-                Three steps, no theatrics. You describe your world; Gexcite
+                Three steps, no theatrics. You describe your world; leadlurex
                 does the reading.
               </p>
             </div>
@@ -121,7 +121,7 @@ function Index() {
                 },
                 {
                   n: "II.",
-                  t: "Gexcite reads the web",
+                  t: "leadlurex reads the web",
                   b: "The model searches public company data — directories, press, hiring signals — and assembles a shortlist.",
                 },
                 {
@@ -160,7 +160,7 @@ function Index() {
           <figure className="md:col-span-7 flex flex-col justify-center">
             <p className="text-6xl leading-none italic text-muted-foreground">&ldquo;</p>
             <blockquote className="mt-4 text-3xl leading-snug md:text-4xl">
-              I stopped guessing who to email. Gexcite hands me a list of
+              I stopped guessing who to email. leadlurex hands me a list of
               companies with a paragraph on each — I read, I write, I send.
               It feels less like software and more like a quiet colleague.
             </blockquote>
