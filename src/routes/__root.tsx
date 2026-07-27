@@ -159,7 +159,9 @@ function SiteFooter() {
         <div className="grid gap-10 md:grid-cols-3">
           <div>
             <div className="flex items-center gap-3">
-              <img src={logoAsset.url} alt="leadlurex crest" className="h-14 w-14 object-contain mix-blend-multiply" />
+              <span className="flex h-28 w-28 items-center justify-center bg-foreground">
+                <img src={logoAsset.url} alt="leadlurex crest" className="h-24 w-24 object-contain" />
+              </span>
               <p className="text-3xl italic">leadlurex</p>
             </div>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
