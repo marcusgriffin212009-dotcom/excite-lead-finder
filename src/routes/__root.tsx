@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import logoAsset from "../assets/leadlurex-logo.png.asset.json";
 
 function NotFoundComponent() {
   return (
@@ -123,10 +124,13 @@ function SiteHeader() {
       <TopBar />
       <div className="mx-auto max-w-6xl px-6">
         <div className="flex items-center justify-between py-5">
-          <Link to="/" className="group flex items-baseline gap-2">
-            <span className="text-3xl italic tracking-tight">leadlurex</span>
-            <span className="text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
-              &mdash; est. 2026
+          <Link to="/" className="group flex items-center gap-3">
+            <img src={logoAsset.url} alt="leadlurex crest" className="h-12 w-12 object-contain mix-blend-multiply" />
+            <span className="flex items-baseline gap-2">
+              <span className="text-3xl italic tracking-tight">leadlurex</span>
+              <span className="text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
+                &mdash; est. 2026
+              </span>
             </span>
           </Link>
           <nav className="flex items-center gap-8 text-sm">
@@ -152,7 +156,10 @@ function SiteFooter() {
       <div className="mx-auto max-w-6xl px-6 py-14">
         <div className="grid gap-10 md:grid-cols-3">
           <div>
-            <p className="text-3xl italic">leadlurex</p>
+            <div className="flex items-center gap-3">
+              <img src={logoAsset.url} alt="leadlurex crest" className="h-14 w-14 object-contain mix-blend-multiply" />
+              <p className="text-3xl italic">leadlurex</p>
+            </div>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
               A small machine that reads the web, so you can spend your
               afternoons writing better emails.
