@@ -125,7 +125,9 @@ function SiteHeader() {
       <div className="mx-auto max-w-6xl px-6">
         <div className="flex items-center justify-between py-5">
           <Link to="/" className="group flex items-center gap-3">
-            <img src={logoAsset.url} alt="leadlurex crest" className="h-12 w-12 object-contain mix-blend-multiply" />
+            <span className="flex h-20 w-20 items-center justify-center bg-foreground">
+              <img src={logoAsset.url} alt="leadlurex crest" className="h-16 w-16 object-contain" />
+            </span>
             <span className="flex items-baseline gap-2">
               <span className="text-3xl italic tracking-tight">leadlurex</span>
               <span className="text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
