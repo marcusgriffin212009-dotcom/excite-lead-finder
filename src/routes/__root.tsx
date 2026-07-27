@@ -156,7 +156,10 @@ function SiteFooter() {
       <div className="mx-auto max-w-6xl px-6 py-14">
         <div className="grid gap-10 md:grid-cols-3">
           <div>
-            <p className="text-3xl italic">leadlurex</p>
+            <div className="flex items-center gap-3">
+              <img src={logoAsset.url} alt="leadlurex crest" className="h-14 w-14 object-contain mix-blend-multiply" />
+              <p className="text-3xl italic">leadlurex</p>
+            </div>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
               A small machine that reads the web, so you can spend your
               afternoons writing better emails.
