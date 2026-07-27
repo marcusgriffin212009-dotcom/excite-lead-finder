@@ -11,7 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import logoAsset from "../assets/leadlurex-logo.png.asset.json";
+
 
 function NotFoundComponent() {
   return (
@@ -125,9 +125,6 @@ function SiteHeader() {
       <div className="mx-auto max-w-6xl px-6">
         <div className="flex items-center justify-between py-5">
           <Link to="/" className="group flex items-center gap-3">
-            <span className="flex h-20 w-20 items-center justify-center bg-foreground">
-              <img src={logoAsset.url} alt="leadlurex crest" className="h-16 w-16 object-contain" />
-            </span>
             <span className="flex items-baseline gap-2">
               <span className="text-3xl italic tracking-tight">leadlurex</span>
               <span className="text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
@@ -158,12 +155,7 @@ function SiteFooter() {
       <div className="mx-auto max-w-6xl px-6 py-14">
         <div className="grid gap-10 md:grid-cols-3">
           <div>
-            <div className="flex items-center gap-3">
-              <span className="flex h-28 w-28 items-center justify-center bg-foreground">
-                <img src={logoAsset.url} alt="leadlurex crest" className="h-24 w-24 object-contain" />
-              </span>
-              <p className="text-3xl italic">leadlurex</p>
-            </div>
+            <p className="text-3xl italic">leadlurex</p>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
               A small machine that reads the web, so you can spend your
               afternoons writing better emails.
