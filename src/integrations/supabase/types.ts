@@ -25,6 +25,7 @@ export type Database = {
           location: string | null
           reason: string | null
           role: string | null
+          saved: boolean
           user_id: string
           website: string | null
         }
@@ -38,6 +39,7 @@ export type Database = {
           location?: string | null
           reason?: string | null
           role?: string | null
+          saved?: boolean
           user_id: string
           website?: string | null
         }
@@ -51,6 +53,7 @@ export type Database = {
           location?: string | null
           reason?: string | null
           role?: string | null
+          saved?: boolean
           user_id?: string
           website?: string | null
         }

@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LeadListRouteImport } from './routes/lead-list'
 import { Route as FindLeadsRouteImport } from './routes/find-leads'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
+const LeadListRoute = LeadListRouteImport.update({
+  id: '/lead-list',
+  path: '/lead-list',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FindLeadsRoute = FindLeadsRouteImport.update({
   id: '/find-leads',
   path: '/find-leads',
@@ -40,12 +46,14 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/find-leads': typeof FindLeadsRoute
+  '/lead-list': typeof LeadListRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/find-leads': typeof FindLeadsRoute
+  '/lead-list': typeof LeadListRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,14 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/find-leads': typeof FindLeadsRoute
+  '/lead-list': typeof LeadListRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/auth' | '/find-leads'
+  fullPaths: '/' | '/about' | '/auth' | '/find-leads' | '/lead-list'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/auth' | '/find-leads'
-  id: '__root__' | '/' | '/about' | '/auth' | '/find-leads'
+  to: '/' | '/about' | '/auth' | '/find-leads' | '/lead-list'
+  id: '__root__' | '/' | '/about' | '/auth' | '/find-leads' | '/lead-list'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,10 +76,18 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AuthRoute: typeof AuthRoute
   FindLeadsRoute: typeof FindLeadsRoute
+  LeadListRoute: typeof LeadListRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/lead-list': {
+      id: '/lead-list'
+      path: '/lead-list'
+      fullPath: '/lead-list'
+      preLoaderRoute: typeof LeadListRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/find-leads': {
       id: '/find-leads'
       path: '/find-leads'
@@ -107,17 +124,8 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AuthRoute: AuthRoute,
   FindLeadsRoute: FindLeadsRoute,
+  LeadListRoute: LeadListRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
