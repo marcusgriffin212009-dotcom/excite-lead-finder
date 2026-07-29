@@ -27,6 +27,21 @@ export const findLeads = createServerFn({ method: "POST" })
     const apiKey = process.env.LOVABLE_API_KEY;
     if (!apiKey) throw new Error("LOVABLE_API_KEY not configured");
 
+    // Fetch existing leads for this user to avoid duplicates
+    const { data: existing } = await context.supabase
+      .from("leads")
+      .select("company_name, website")
+      .eq("user_id", context.userId)
+      .order("created_at", { ascending: false })
+      .limit(500);
+    const existingList = (existing ?? []) as { company_name: string; website: string | null }[];
+    const normName = (s: string) => s.trim().toLowerCase().replace(/[,.]/g, "").replace(/\s+(inc|llc|ltd|co|corp|company)\.?$/i, "").trim();
+    const normSite = (s: string | null | undefined) =>
+      (s ?? "").toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/.*$/, "").trim();
+    const seenNames = new Set(existingList.map((l) => normName(l.company_name)));
+    const seenSites = new Set(existingList.map((l) => normSite(l.website)).filter(Boolean));
+    const excludeList = existingList.slice(0, 120).map((l) => l.company_name).join(", ");
+
     const system = `You are leadlurex, an AI sales prospecting assistant. Given a small business's profile, return a JSON array of REAL, publicly-known companies that plausibly match the ideal customer profile. Only include companies that actually exist in the public web/knowledge. Do NOT invent contact emails or phone numbers. For contact_hint, describe how to reach out (e.g. "Contact via their website contact form" or "Reach out via LinkedIn to their Head of Marketing"). Return ONLY valid JSON, no prose, no markdown.`;
 
     const user = `My business:
@@ -34,7 +49,7 @@ export const findLeads = createServerFn({ method: "POST" })
 - What I sell: ${data.product}
 - Who I want to sell to: ${data.targetCustomer}
 
-Return a JSON object with a "leads" array of ${data.count} real companies. Each lead has:
+${excludeList ? `IMPORTANT: Do NOT include any of these companies — they have already been suggested previously. Return only NEW, different companies:\n${excludeList}\n\n` : ""}Return a JSON object with a "leads" array of ${data.count} real companies. Each lead has:
 {
   "company_name": string,
   "contact_person": string | null (a plausible role-based name if known, else null),
@@ -81,12 +96,22 @@ Return ONLY {"leads": [...]}. No markdown fences.`;
       parsed = match ? JSON.parse(match[0]) : { leads: [] };
     }
     const rawLeads = Array.isArray(parsed.leads) ? parsed.leads : [];
-    const leads = rawLeads
+    const leads = (rawLeads
       .map((l: unknown) => {
         const r = LeadSchema.safeParse(l);
         return r.success ? r.data : null;
       })
-      .filter(Boolean) as z.infer<typeof LeadSchema>[];
+      .filter(Boolean) as z.infer<typeof LeadSchema>[])
+      .filter((l) => {
+        const n = normName(l.company_name);
+        const s = normSite(l.website);
+        if (!n) return false;
+        if (seenNames.has(n)) return false;
+        if (s && seenSites.has(s)) return false;
+        seenNames.add(n);
+        if (s) seenSites.add(s);
+        return true;
+      });
 
     // Save to db
     const rows = leads.map((l) => ({
