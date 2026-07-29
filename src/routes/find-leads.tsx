@@ -1,8 +1,8 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { findLeads } from "@/lib/leads.functions";
+import { findLeads, setLeadSaved } from "@/lib/leads.functions";
 
 export const Route = createFileRoute("/find-leads")({
   head: () => ({
