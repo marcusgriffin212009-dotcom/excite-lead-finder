@@ -96,12 +96,22 @@ Return ONLY {"leads": [...]}. No markdown fences.`;
       parsed = match ? JSON.parse(match[0]) : { leads: [] };
     }
     const rawLeads = Array.isArray(parsed.leads) ? parsed.leads : [];
-    const leads = rawLeads
+    const leads = (rawLeads
       .map((l: unknown) => {
         const r = LeadSchema.safeParse(l);
         return r.success ? r.data : null;
       })
-      .filter(Boolean) as z.infer<typeof LeadSchema>[];
+      .filter(Boolean) as z.infer<typeof LeadSchema>[])
+      .filter((l) => {
+        const n = normName(l.company_name);
+        const s = normSite(l.website);
+        if (!n) return false;
+        if (seenNames.has(n)) return false;
+        if (s && seenSites.has(s)) return false;
+        seenNames.add(n);
+        if (s) seenSites.add(s);
+        return true;
+      });
 
     // Save to db
     const rows = leads.map((l) => ({
