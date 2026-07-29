@@ -15,6 +15,7 @@ export const Route = createFileRoute("/find-leads")({
 });
 
 type Lead = {
+  id?: string;
   company_name: string;
   contact_person?: string | null;
   role?: string | null;
@@ -28,6 +29,7 @@ type Lead = {
 function FindLeadsPage() {
   const navigate = useNavigate();
   const runFindLeads = useServerFn(findLeads);
+  const runSetSaved = useServerFn(setLeadSaved);
   const [checking, setChecking] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
@@ -38,6 +40,8 @@ function FindLeadsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [leads, setLeads] = useState<Lead[]>([]);
+  const [savedIds, setSavedIds] = useState<Record<string, boolean>>({});
+  const [savingId, setSavingId] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -73,15 +77,29 @@ function FindLeadsPage() {
     setLoading(true);
     setError(null);
     setLeads([]);
+    setSavedIds({});
     try {
       const result = await runFindLeads({
         data: { businessType, product, targetCustomer, count: 8 },
       });
-      setLeads(result.leads);
+      setLeads(result.leads as Lead[]);
     } catch (err: any) {
       setError(err.message ?? "Failed to find leads");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSave = async (lead: Lead) => {
+    if (!lead.id) return;
+    setSavingId(lead.id);
+    try {
+      await runSetSaved({ data: { id: lead.id, saved: true } });
+      setSavedIds((s) => ({ ...s, [lead.id!]: true }));
+    } catch (err: any) {
+      setError(err.message ?? "Failed to save lead");
+    } finally {
+      setSavingId(null);
     }
   };
 
