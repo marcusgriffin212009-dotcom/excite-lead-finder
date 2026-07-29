@@ -100,8 +100,13 @@ Return ONLY {"leads": [...]}. No markdown fences.`;
       reason: l.reason ?? null,
       contact_hint: l.contact_hint ?? null,
     }));
+    let inserted: { id: string; company_name: string }[] = [];
     if (rows.length > 0) {
-      await context.supabase.from("leads").insert(rows);
+      const { data: ins } = await context.supabase
+        .from("leads")
+        .insert(rows)
+        .select("id, company_name, contact_person, role, website, industry, location, reason, contact_hint, saved");
+      inserted = (ins as any) ?? [];
     }
 
     // Also persist onboarding answers to profile
