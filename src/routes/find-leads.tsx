@@ -179,47 +179,65 @@ function FindLeadsPage() {
 
       {leads.length > 0 && (
         <div className="mt-12">
-          <h2 className="text-2xl">Your leads</h2>
+          <div className="flex items-baseline justify-between">
+            <h2 className="text-2xl">Your leads</h2>
+            <Link to="/lead-list" className="text-sm italic underline underline-offset-4">
+              View Lead list →
+            </Link>
+          </div>
           <div className="mt-6 grid gap-6 md:grid-cols-2">
-            {leads.map((lead, i) => (
-              <article key={i} className="bg-card p-6 text-card-foreground">
-                <h3 className="text-xl">{lead.company_name}</h3>
-                {lead.industry && (
-                  <p className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">
-                    {lead.industry}{lead.location ? ` · ${lead.location}` : ""}
-                  </p>
-                )}
-                {lead.role && (
-                  <p className="mt-3 text-sm">
-                    <span className="font-semibold">Reach:</span>{" "}
-                    {lead.contact_person ? `${lead.contact_person} — ` : ""}
-                    {lead.role}
-                  </p>
-                )}
-                {lead.website && (
-                  <p className="mt-1 text-sm">
-                    <a
-                      href={lead.website.startsWith("http") ? lead.website : `https://${lead.website}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="underline"
+            {leads.map((lead, i) => {
+              const isSaved = lead.id ? !!savedIds[lead.id] : false;
+              return (
+                <article key={lead.id ?? i} className="relative bg-card p-6 text-card-foreground">
+                  {lead.id && (
+                    <button
+                      onClick={() => handleSave(lead)}
+                      disabled={isSaved || savingId === lead.id}
+                      className="absolute right-4 top-4 border border-foreground px-2 py-1 text-[11px] uppercase tracking-[0.2em] hover:bg-foreground hover:text-background disabled:cursor-default disabled:opacity-60 disabled:hover:bg-transparent disabled:hover:text-foreground"
+                      title={isSaved ? "Saved to Lead list" : "Save to Lead list"}
                     >
-                      {lead.website}
-                    </a>
-                  </p>
-                )}
-                {lead.reason && (
-                  <p className="mt-3 text-sm leading-relaxed">
-                    <span className="font-semibold">Why they fit:</span> {lead.reason}
-                  </p>
-                )}
-                {lead.contact_hint && (
-                  <p className="mt-3 text-sm leading-relaxed">
-                    <span className="font-semibold">How to reach out:</span> {lead.contact_hint}
-                  </p>
-                )}
-              </article>
-            ))}
+                      {isSaved ? "✓ Saved" : savingId === lead.id ? "Saving…" : "+ Save"}
+                    </button>
+                  )}
+                  <h3 className="pr-24 text-xl">{lead.company_name}</h3>
+                  {lead.industry && (
+                    <p className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">
+                      {lead.industry}{lead.location ? ` · ${lead.location}` : ""}
+                    </p>
+                  )}
+                  {lead.role && (
+                    <p className="mt-3 text-sm">
+                      <span className="font-semibold">Reach:</span>{" "}
+                      {lead.contact_person ? `${lead.contact_person} — ` : ""}
+                      {lead.role}
+                    </p>
+                  )}
+                  {lead.website && (
+                    <p className="mt-1 text-sm">
+                      <a
+                        href={lead.website.startsWith("http") ? lead.website : `https://${lead.website}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="underline"
+                      >
+                        {lead.website}
+                      </a>
+                    </p>
+                  )}
+                  {lead.reason && (
+                    <p className="mt-3 text-sm leading-relaxed">
+                      <span className="font-semibold">Why they fit:</span> {lead.reason}
+                    </p>
+                  )}
+                  {lead.contact_hint && (
+                    <p className="mt-3 text-sm leading-relaxed">
+                      <span className="font-semibold">How to reach out:</span> {lead.contact_hint}
+                    </p>
+                  )}
+                </article>
+              );
+            })}
           </div>
         </div>
       )}
