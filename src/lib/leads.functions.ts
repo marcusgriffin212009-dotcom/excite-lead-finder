@@ -121,5 +121,33 @@ Return ONLY {"leads": [...]}. No markdown fences.`;
       })
       .eq("id", context.userId);
 
-    return { leads };
+    return { leads: inserted.length > 0 ? inserted : leads };
+  });
+
+export const setLeadSaved = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ id: z.string().uuid(), saved: z.boolean() }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("leads")
+      .update({ saved: data.saved })
+      .eq("id", data.id)
+      .eq("user_id", context.userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const listSavedLeads = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await context.supabase
+      .from("leads")
+      .select("id, company_name, contact_person, role, website, industry, location, reason, contact_hint, created_at")
+      .eq("user_id", context.userId)
+      .eq("saved", true)
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return { leads: data ?? [] };
   });
