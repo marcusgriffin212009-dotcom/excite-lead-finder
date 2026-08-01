@@ -10,11 +10,17 @@ export const Route = createFileRoute("/auth")({
       { name: "description", content: "Sign in or start your leadlurex free trial." },
     ],
   }),
+  validateSearch: (s: Record<string, unknown>) => ({
+    next: typeof s.next === "string" && s.next.startsWith("/") && !s.next.startsWith("//")
+      ? s.next
+      : undefined,
+  }),
   component: AuthPage,
 });
 
 function AuthPage() {
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
   const [mode, setMode] = useState<"signin" | "signup">("signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,14 +30,21 @@ function AuthPage() {
   const [info, setInfo] = useState<string | null>(null);
 
   useEffect(() => {
+    const go = () => {
+      if (next) {
+        window.location.href = next;
+      } else {
+        navigate({ to: "/find-leads" });
+      }
+    };
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      if (session) navigate({ to: "/find-leads" });
+      if (session) go();
     });
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/find-leads" });
+      if (data.session) go();
     });
     return () => sub.subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, next]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
