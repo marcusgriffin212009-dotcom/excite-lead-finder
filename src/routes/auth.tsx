@@ -57,7 +57,7 @@ function AuthPage() {
           email,
           password,
           options: {
-            emailRedirectTo: window.location.origin,
+            emailRedirectTo: next ? window.location.origin + next : window.location.origin,
             data: { full_name: fullName },
           },
         });
@@ -77,7 +77,7 @@ function AuthPage() {
   const handleGoogle = async () => {
     setError(null);
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: next ? window.location.origin + next : window.location.origin,
     });
     if (result.error) setError(result.error.message ?? "Google sign-in failed");
   };
