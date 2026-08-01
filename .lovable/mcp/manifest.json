@@ -1,0 +1,171 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.1",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://wymyiyecjwvaiiuzvbzt.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "leadlurex",
+      "version": "0.1.0",
+      "title": "leadlurex"
+    },
+    "tools": [
+      {
+        "name": "find_leads",
+        "title": "Find new leads",
+        "description": "Generate new business leads for the signed-in user with the leadlurex AI and store them in their account. Skips companies already suggested before. Takes up to ~30 seconds.",
+        "annotations": {
+          "readOnlyHint": false,
+          "idempotentHint": false,
+          "openWorldHint": true
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "businessType": {
+              "description": "Defaults to the saved profile.",
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "product": {
+              "description": "Defaults to the saved profile.",
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "targetCustomer": {
+              "description": "Defaults to the saved profile.",
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "count": {
+              "default": 6,
+              "description": "How many leads to generate.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_leads",
+        "title": "List leads",
+        "description": "List the signed-in user's leadlurex leads, newest first. Optionally restrict to leads saved to their Lead List.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "savedOnly": {
+              "default": false,
+              "description": "Only return leads saved to the Lead List.",
+              "type": "boolean"
+            },
+            "limit": {
+              "default": 25,
+              "description": "Maximum number of leads to return.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "set_lead_saved",
+        "title": "Save or unsave a lead",
+        "description": "Add a lead to the user's Lead List, or remove it, by lead id. Use list_leads to find ids.",
+        "annotations": {
+          "readOnlyHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "description": "The lead id."
+            },
+            "saved": {
+              "type": "boolean",
+              "description": "true to save to the Lead List, false to remove it."
+            }
+          },
+          "required": [
+            "id",
+            "saved"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_business_profile",
+        "title": "Get business profile",
+        "description": "Read the signed-in user's leadlurex business profile: business type, what they sell, and their target customer.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "update_business_profile",
+        "title": "Update business profile",
+        "description": "Update the signed-in user's leadlurex onboarding answers: business type, what they sell, and who they sell to.",
+        "annotations": {
+          "readOnlyHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "businessType": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "product": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "targetCustomer": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            }
+          }
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
