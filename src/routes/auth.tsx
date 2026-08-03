@@ -31,8 +31,18 @@ function AuthPage() {
 
   useEffect(() => {
     const go = () => {
-      if (next) {
-        window.location.href = next;
+      let target = next;
+      if (!target) {
+        try {
+          const stored = sessionStorage.getItem("postAuthNext");
+          if (stored && stored.startsWith("/") && !stored.startsWith("//")) target = stored;
+          sessionStorage.removeItem("postAuthNext");
+        } catch {
+          /* ignore */
+        }
+      }
+      if (target) {
+        window.location.href = target;
       } else {
         navigate({ to: "/find-leads" });
       }
