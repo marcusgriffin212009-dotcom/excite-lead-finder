@@ -31,8 +31,18 @@ function AuthPage() {
 
   useEffect(() => {
     const go = () => {
-      if (next) {
-        window.location.href = next;
+      let target = next;
+      if (!target) {
+        try {
+          const stored = sessionStorage.getItem("postAuthNext");
+          if (stored && stored.startsWith("/") && !stored.startsWith("//")) target = stored;
+          sessionStorage.removeItem("postAuthNext");
+        } catch {
+          /* ignore */
+        }
+      }
+      if (target) {
+        window.location.href = target;
       } else {
         navigate({ to: "/find-leads" });
       }
@@ -76,8 +86,13 @@ function AuthPage() {
 
   const handleGoogle = async () => {
     setError(null);
+    try {
+      if (next) sessionStorage.setItem("postAuthNext", next);
+    } catch {
+      /* ignore */
+    }
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: next ? window.location.origin + next : window.location.origin,
+      redirect_uri: window.location.origin,
     });
     if (result.error) setError(result.error.message ?? "Google sign-in failed");
   };
