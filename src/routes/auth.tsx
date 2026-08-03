@@ -130,20 +130,19 @@ function AuthPage() {
             />
           </div>
 
-          {mode === "signin" && (
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="remember"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="rounded border border-border"
-              />
-              <label htmlFor="remember" className="text-sm text-muted-foreground">
-                Keep me signed in
-              </label>
-            </div>
-          )}
+          {/* Show the remember option for both account creation and sign in */}
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="remember"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="rounded border border-border"
+            />
+            <label htmlFor="remember" className="text-sm text-muted-foreground">
+              Remember me
+            </label>
+          </div>
 
           {error && <p className="text-sm text-destructive">{error}</p>}
           {info && <p className="text-sm text-green-600">{info}</p>}
@@ -158,7 +157,7 @@ function AuthPage() {
         </form>
 
         <p className="mt-6 text-center text-sm">
-          {mode === "signup" ? "Already have an account?" : "New to leadlurex?"}{" "}
+          {mode === "signup" ? "Already have an account?" : "New to leadlurex?"} {" "}
           <button
             onClick={() => setMode(mode === "signup" ? "signin" : "signup")}
             className="underline hover:opacity-80"
