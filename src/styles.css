@@ -66,13 +66,66 @@
 }
 
 @layer base {
-  * {
-    border-color: var(--color-border);
-    font-family: "Times New Roman", Times, serif;
+  /* Mobile-first responsive foundations */
+  *, *::before, *::after {
+    box-sizing: border-box;
   }
-  html, body {
+
+  /* Merge with existing base * rules (border-color / font-family kept below) */
+
+  html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: "Times New Roman", Times, serif;
+  }
+
+  /* Make media scale down on small screens */
+  img, picture, video, iframe, svg {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Container utility: use in layout wrappers to keep consistent padding */
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Prevent flex children from causing overflow */
+  .no-overflow, .row, .col {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  /* Make touch targets comfortably large */
+  button, .btn {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+
+  /* Quick debug helper to visualize overflow during testing (remove in prod) */
+  .debug-outline * {
+    outline: 1px solid rgba(255,0,0,0.12);
+  }
+
+  /* Preserve existing theme + base styles */
+  * {
+    border-color: var(--color-border);
     font-family: "Times New Roman", Times, serif;
   }
   h1, h2, h3, h4, h5, h6, p, span, a, button, input, textarea, select, label, div {
@@ -94,7 +147,7 @@
     pointer-events: none;
     opacity: 0.06;
     mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves=[...]");
   }
 }
 
