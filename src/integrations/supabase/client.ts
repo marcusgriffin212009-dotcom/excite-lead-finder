@@ -40,7 +40,43 @@ function createSupabaseClient() {
     ];
     const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Connect Supabase in Lovable Cloud.`;
     console.error(`[Supabase] ${message}`);
-    throw new Error(message);
+
+    // Return a lightweight stub client so the app doesn't throw at import-time.
+    // Pages can still handle the absence of Supabase (show UI, redirect to /auth, etc.)
+    const err = new Error(message);
+
+    const makeReject = () => async () => ({ data: null, error: err });
+
+    const stubFrom = (_table?: string) => ({
+      select: (_cols?: string) => ({
+        eq: (_col: string, _val: any) => ({
+          maybeSingle: async () => ({ data: null, error: err }),
+          limit: async () => ({ data: null, error: err }),
+          order: (_col: string, _opts?: any) => ({ limit: async () => ({ data: null, error: err }) }),
+        }),
+        maybeSingle: async () => ({ data: null, error: err }),
+      }),
+    });
+
+    const stub = {
+      auth: {
+        getSession: async () => ({ data: { session: null }, error: null }),
+        getUser: async () => ({ data: { user: null }, error: null }),
+        onAuthStateChange: (_cb: any) => ({ subscription: { unsubscribe() {} } }),
+        signUp: async () => ({ data: null, error: err }),
+        signInWithPassword: async () => ({ data: null, error: err }),
+        signOut: async () => ({ data: null, error: err }),
+      },
+      from: stubFrom,
+      // generic fallback for other access patterns
+      rpc: makeReject(),
+      authAdmin: {
+        // some server-side code might call this; provide rejections
+        listUsers: makeReject(),
+      },
+    } as unknown as ReturnType<typeof createClient>;
+
+    return stub;
   }
 
   return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
@@ -65,4 +101,3 @@ export const supabase = new Proxy({} as ReturnType<typeof createSupabaseClient>,
     return Reflect.get(_supabase, prop, receiver);
   },
 });
-
