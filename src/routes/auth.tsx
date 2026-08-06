@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -24,7 +25,6 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -67,7 +67,7 @@ function AuthPage() {
           email,
           password,
           options: {
-            emailRedirectTo: window.location.origin,
+            emailRedirectTo: next ? window.location.origin + next : window.location.origin,
             data: { full_name: fullName },
           },
         });
@@ -84,6 +84,19 @@ function AuthPage() {
     }
   };
 
+  const handleGoogle = async () => {
+    setError(null);
+    try {
+      if (next) sessionStorage.setItem("postAuthNext", next);
+    } catch {
+      /* ignore */
+    }
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
+    });
+    if (result.error) setError(result.error.message ?? "Google sign-in failed");
+  };
+
   return (
     <div className="mx-auto flex min-h-[calc(100vh-140px)] max-w-md items-center px-6 py-12">
       <div className="w-full bg-card p-10 text-card-foreground">
@@ -96,7 +109,20 @@ function AuthPage() {
             : "Sign in to find your next leads."}
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+        <button
+          onClick={handleGoogle}
+          className="mt-6 w-full rounded-md border border-border bg-background px-4 py-2.5 text-foreground hover:bg-accent"
+        >
+          Continue with Google
+        </button>
+
+        <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground">
+          <span className="h-px flex-1 bg-border" />
+          <span>or</span>
+          <span className="h-px flex-1 bg-border" />
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
           {mode === "signup" && (
             <div>
               <label className="block text-sm">Full name</label>
@@ -130,22 +156,8 @@ function AuthPage() {
             />
           </div>
 
-          {/* Show the remember option for both account creation and sign in */}
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="remember"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-              className="rounded border border-border"
-            />
-            <label htmlFor="remember" className="text-sm text-muted-foreground">
-              Remember me
-            </label>
-          </div>
-
           {error && <p className="text-sm text-destructive">{error}</p>}
-          {info && <p className="text-sm text-green-600">{info}</p>}
+          {info && <p className="text-sm">{info}</p>}
 
           <button
             type="submit"
@@ -157,10 +169,10 @@ function AuthPage() {
         </form>
 
         <p className="mt-6 text-center text-sm">
-          {mode === "signup" ? "Already have an account?" : "New to leadlurex?"} {" "}
+          {mode === "signup" ? "Already have an account?" : "New to leadlurex?"}{" "}
           <button
             onClick={() => setMode(mode === "signup" ? "signin" : "signup")}
-            className="underline hover:opacity-80"
+            className="underline"
           >
             {mode === "signup" ? "Sign in" : "Start free trial"}
           </button>
