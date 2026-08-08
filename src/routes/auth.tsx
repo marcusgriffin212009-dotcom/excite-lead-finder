@@ -88,33 +88,6 @@ function AuthPage() {
     }
   };
 
-  const handleGoogle = async () => {
-    setError(null);
-    setGoogleLoading(true);
-    setRememberMe(remember);
-    try {
-      if (next) sessionStorage.setItem("postAuthNext", next);
-    } catch {
-      /* ignore */
-    }
-    try {
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
-      });
-      if (result.error) {
-        setError(result.error.message ?? "Google sign-in failed");
-        setGoogleLoading(false);
-        return;
-      }
-      if (result.redirected) return; // browser is navigating to Google
-      // Tokens received and session set — the auth listener above handles the redirect.
-    } catch (err: any) {
-      setError(err?.message ?? "Google sign-in failed");
-      setGoogleLoading(false);
-    }
-  };
-
-
   return (
     <div className="mx-auto flex min-h-[calc(100vh-140px)] max-w-md items-center px-6 py-12">
       <div className="w-full bg-card p-10 text-card-foreground">
