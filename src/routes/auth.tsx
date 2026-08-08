@@ -176,6 +176,16 @@ function AuthPage() {
               className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-foreground"
             />
           </div>
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
+              className="h-4 w-4 border border-border"
+            />
+            <span>Remember me</span>
+          </label>
+
 
           {error && <p className="text-sm text-destructive">{error}</p>}
           {info && <p className="text-sm">{info}</p>}
