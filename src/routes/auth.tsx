@@ -31,7 +31,6 @@ function AuthPage() {
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [remember, setRemember] = useState(true);
-  const [googleLoading, setGoogleLoading] = useState(false);
 
   useEffect(() => {
     const go = () => {
