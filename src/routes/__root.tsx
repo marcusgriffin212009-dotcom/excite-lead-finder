@@ -193,6 +193,16 @@ function SiteFooter() {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  useEffect(() => {
+    void (async () => {
+      const { enforceRememberMe } = await import("../lib/remember");
+      const { supabase } = await import("@/integrations/supabase/client");
+      await enforceRememberMe(() => supabase.auth.signOut());
+    })();
+  }, []);
+
+
+
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col bg-background text-foreground" style={{ fontFamily: '"Times New Roman", Times, serif' }}>

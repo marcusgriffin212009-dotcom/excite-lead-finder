@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
+import { setRememberMe } from "@/lib/remember";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -10,11 +11,13 @@ export const Route = createFileRoute("/auth")({
       { name: "description", content: "Sign in or start your leadlurex free trial." },
     ],
   }),
-  validateSearch: (s: Record<string, unknown>) => ({
-    next: typeof s.next === "string" && s.next.startsWith("/") && !s.next.startsWith("//")
-      ? s.next
-      : undefined,
-  }),
+  validateSearch: (s: Record<string, unknown>): { next?: string } => {
+    const next =
+      typeof s.next === "string" && s.next.startsWith("/") && !s.next.startsWith("//")
+        ? s.next
+        : undefined;
+    return next ? { next } : {};
+  },
   component: AuthPage,
 });
 
@@ -28,6 +31,8 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
+  const [remember, setRemember] = useState(true);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   useEffect(() => {
     const go = () => {
@@ -61,6 +66,7 @@ function AuthPage() {
     setLoading(true);
     setError(null);
     setInfo(null);
+    setRememberMe(remember);
     try {
       if (mode === "signup") {
         const { error } = await supabase.auth.signUp({
@@ -86,16 +92,30 @@ function AuthPage() {
 
   const handleGoogle = async () => {
     setError(null);
+    setGoogleLoading(true);
+    setRememberMe(remember);
     try {
       if (next) sessionStorage.setItem("postAuthNext", next);
     } catch {
       /* ignore */
     }
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) setError(result.error.message ?? "Google sign-in failed");
+    try {
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
+      });
+      if (result.error) {
+        setError(result.error.message ?? "Google sign-in failed");
+        setGoogleLoading(false);
+        return;
+      }
+      if (result.redirected) return; // browser is navigating to Google
+      // Tokens received and session set — the auth listener above handles the redirect.
+    } catch (err: any) {
+      setError(err?.message ?? "Google sign-in failed");
+      setGoogleLoading(false);
+    }
   };
+
 
   return (
     <div className="mx-auto flex min-h-[calc(100vh-140px)] max-w-md items-center px-6 py-12">
@@ -111,9 +131,10 @@ function AuthPage() {
 
         <button
           onClick={handleGoogle}
-          className="mt-6 w-full rounded-md border border-border bg-background px-4 py-2.5 text-foreground hover:bg-accent"
+          disabled={googleLoading}
+          className="mt-6 w-full rounded-md border border-border bg-background px-4 py-2.5 text-foreground hover:bg-accent disabled:opacity-50"
         >
-          Continue with Google
+          {googleLoading ? "Opening Google..." : "Continue with Google"}
         </button>
 
         <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground">
@@ -155,6 +176,16 @@ function AuthPage() {
               className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-foreground"
             />
           </div>
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
+              className="h-4 w-4 border border-border"
+            />
+            <span>Remember me</span>
+          </label>
+
 
           {error && <p className="text-sm text-destructive">{error}</p>}
           {info && <p className="text-sm">{info}</p>}
