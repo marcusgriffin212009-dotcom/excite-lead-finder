@@ -131,9 +131,10 @@ function AuthPage() {
 
         <button
           onClick={handleGoogle}
-          className="mt-6 w-full rounded-md border border-border bg-background px-4 py-2.5 text-foreground hover:bg-accent"
+          disabled={googleLoading}
+          className="mt-6 w-full rounded-md border border-border bg-background px-4 py-2.5 text-foreground hover:bg-accent disabled:opacity-50"
         >
-          Continue with Google
+          {googleLoading ? "Opening Google..." : "Continue with Google"}
         </button>
 
         <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground">
