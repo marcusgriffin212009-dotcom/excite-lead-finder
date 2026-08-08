@@ -100,21 +100,7 @@ function AuthPage() {
             : "Sign in to find your next leads."}
         </p>
 
-        <button
-          onClick={handleGoogle}
-          disabled={googleLoading}
-          className="mt-6 w-full rounded-md border border-border bg-background px-4 py-2.5 text-foreground hover:bg-accent disabled:opacity-50"
-        >
-          {googleLoading ? "Opening Google..." : "Continue with Google"}
-        </button>
-
-        <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground">
-          <span className="h-px flex-1 bg-border" />
-          <span>or</span>
-          <span className="h-px flex-1 bg-border" />
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           {mode === "signup" && (
             <div>
               <label className="block text-sm">Full name</label>
