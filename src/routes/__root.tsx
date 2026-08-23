@@ -137,6 +137,7 @@ function SiteHeader() {
             <Link to="/about" className="italic hover:underline underline-offset-4">About</Link>
             <Link to="/find-leads" className="italic hover:underline underline-offset-4">Find Leads</Link>
             <Link to="/lead-list" className="italic hover:underline underline-offset-4">Lead List</Link>
+            <Link to="/pricing" className="italic hover:underline underline-offset-4">Pricing</Link>
             <Link
               to="/auth"
               className="border border-foreground px-4 py-1.5 italic hover:bg-foreground hover:text-background"
@@ -169,6 +170,7 @@ function SiteFooter() {
               <li><Link to="/about" className="hover:underline underline-offset-4">About</Link></li>
               <li><Link to="/find-leads" className="hover:underline underline-offset-4">Find Leads</Link></li>
               <li><Link to="/lead-list" className="hover:underline underline-offset-4">Lead List</Link></li>
+              <li><Link to="/pricing" className="hover:underline underline-offset-4">Pricing</Link></li>
               <li><Link to="/auth" className="hover:underline underline-offset-4">Sign in</Link></li>
             </ul>
           </div>
