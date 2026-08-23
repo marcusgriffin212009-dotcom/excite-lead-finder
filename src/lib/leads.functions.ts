@@ -165,6 +165,11 @@ Return ONLY {"leads": [...]}. No markdown fences.`;
       inserted = (ins as any) ?? [];
     }
 
+    // Log the search for weekly quota accounting
+    await context.supabase
+      .from("lead_searches")
+      .insert({ user_id: context.userId, lead_count: inserted.length || leads.length });
+
     // Also persist onboarding answers to profile
     await context.supabase
       .from("profiles")
@@ -177,8 +182,36 @@ Return ONLY {"leads": [...]}. No markdown fences.`;
       })
       .eq("id", context.userId);
 
-    return { leads: inserted.length > 0 ? inserted : leads };
+    return { leads: inserted.length > 0 ? inserted : leads, subscribed };
   });
+
+export const getLeadQuota = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const email = (context.claims as { email?: string } | undefined)?.email ?? null;
+    const { getSubscriptionStatus } = await import("./billing.server");
+    let subscribed = false;
+    try {
+      subscribed = (await getSubscriptionStatus(email)).subscribed;
+    } catch (err) {
+      console.error("[lead-quota] subscription check failed", err);
+    }
+
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const { count } = await context.supabase
+      .from("lead_searches")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", context.userId)
+      .gte("created_at", weekAgo);
+
+    return {
+      subscribed,
+      searchesThisWeek: count ?? 0,
+      weeklyLimit: subscribed ? null : FREE_WEEKLY_SEARCHES,
+      leadsPerSearch: subscribed ? PLUS_LEADS_PER_SEARCH : FREE_LEADS_PER_SEARCH,
+    };
+  });
+
 
 export const setLeadSaved = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
