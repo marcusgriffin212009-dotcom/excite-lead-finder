@@ -31,7 +31,34 @@ export const findLeads = createServerFn({ method: "POST" })
     const apiKey = process.env.LOVABLE_API_KEY;
     if (!apiKey) throw new Error("LOVABLE_API_KEY not configured");
 
+    // Plan gating: free users get 2 searches a week and 8 leads per search.
+    const email = (context.claims as { email?: string } | undefined)?.email ?? null;
+    const { getSubscriptionStatus } = await import("./billing.server");
+    let subscribed = false;
+    try {
+      subscribed = (await getSubscriptionStatus(email)).subscribed;
+    } catch (err) {
+      console.error("[find-leads] subscription check failed", err);
+    }
+
+    if (!subscribed) {
+      const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      const { count } = await context.supabase
+        .from("lead_searches")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", context.userId)
+        .gte("created_at", weekAgo);
+      if ((count ?? 0) >= FREE_WEEKLY_SEARCHES) {
+        throw new Error(
+          `Free plan limit reached: ${FREE_WEEKLY_SEARCHES} lead searches per week. Upgrade to Plus for unlimited searches.`,
+        );
+      }
+    }
+
+    const leadCount = subscribed ? PLUS_LEADS_PER_SEARCH : FREE_LEADS_PER_SEARCH;
+
     // Fetch existing leads for this user to avoid duplicates
+
     const { data: existing } = await context.supabase
       .from("leads")
       .select("company_name, website")
