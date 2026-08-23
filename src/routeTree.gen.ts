@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as LeadListRouteImport } from './routes/lead-list'
 import { Route as FindLeadsRouteImport } from './routes/find-leads'
@@ -20,6 +21,11 @@ import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
   path: '/mcp',
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/find-leads': typeof FindLeadsRoute
   '/lead-list': typeof LeadListRoute
   '/mcp': typeof McpRoute
+  '/pricing': typeof PricingRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -93,6 +100,7 @@ export interface FileRoutesByTo {
   '/find-leads': typeof FindLeadsRoute
   '/lead-list': typeof LeadListRoute
   '/mcp': typeof McpRoute
+  '/pricing': typeof PricingRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -106,6 +114,7 @@ export interface FileRoutesById {
   '/find-leads': typeof FindLeadsRoute
   '/lead-list': typeof LeadListRoute
   '/mcp': typeof McpRoute
+  '/pricing': typeof PricingRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -120,6 +129,7 @@ export interface FileRouteTypes {
     | '/find-leads'
     | '/lead-list'
     | '/mcp'
+    | '/pricing'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/.lovable/oauth/consent'
@@ -132,6 +142,7 @@ export interface FileRouteTypes {
     | '/find-leads'
     | '/lead-list'
     | '/mcp'
+    | '/pricing'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/.lovable/oauth/consent'
@@ -144,6 +155,7 @@ export interface FileRouteTypes {
     | '/find-leads'
     | '/lead-list'
     | '/mcp'
+    | '/pricing'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/.lovable/oauth/consent'
@@ -157,6 +169,7 @@ export interface RootRouteChildren {
   FindLeadsRoute: typeof FindLeadsRoute
   LeadListRoute: typeof LeadListRoute
   McpRoute: typeof McpRoute
+  PricingRoute: typeof PricingRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
@@ -165,6 +178,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mcp': {
       id: '/mcp'
       path: '/mcp'
@@ -245,6 +265,7 @@ const rootRouteChildren: RootRouteChildren = {
   FindLeadsRoute: FindLeadsRoute,
   LeadListRoute: LeadListRoute,
   McpRoute: McpRoute,
+  PricingRoute: PricingRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
