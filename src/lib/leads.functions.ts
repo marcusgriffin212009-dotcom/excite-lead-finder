@@ -80,7 +80,7 @@ export const findLeads = createServerFn({ method: "POST" })
 - What I sell: ${data.product}
 - Who I want to sell to: ${data.targetCustomer}
 
-${excludeList ? `IMPORTANT: Do NOT include any of these companies — they have already been suggested previously. Return only NEW, different companies:\n${excludeList}\n\n` : ""}Return a JSON object with a "leads" array of ${data.count} real companies. Each lead has:
+${excludeList ? `IMPORTANT: Do NOT include any of these companies — they have already been suggested previously. Return only NEW, different companies:\n${excludeList}\n\n` : ""}Return a JSON object with a "leads" array of ${leadCount} real companies. Each lead has:
 {
   "company_name": string,
   "contact_person": string | null (a plausible role-based name if known, else null),
