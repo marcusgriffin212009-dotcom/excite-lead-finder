@@ -2,12 +2,16 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
+const FREE_WEEKLY_SEARCHES = 2;
+const FREE_LEADS_PER_SEARCH = 8;
+const PLUS_LEADS_PER_SEARCH = 20;
+
 const InputSchema = z.object({
   businessType: z.string().min(1).max(200),
   product: z.string().min(1).max(500),
   targetCustomer: z.string().min(1).max(500),
-  count: z.number().int().min(1).max(15).default(8),
 });
+
 
 const LeadSchema = z.object({
   company_name: z.string(),
