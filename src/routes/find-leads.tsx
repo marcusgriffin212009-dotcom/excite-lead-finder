@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { findLeads, setLeadSaved } from "@/lib/leads.functions";
+import { findLeads, setLeadSaved, getLeadQuota } from "@/lib/leads.functions";
 
 export const Route = createFileRoute("/find-leads")({
   head: () => ({
@@ -30,6 +30,13 @@ function FindLeadsPage() {
   const navigate = useNavigate();
   const runFindLeads = useServerFn(findLeads);
   const runSetSaved = useServerFn(setLeadSaved);
+  const runQuota = useServerFn(getLeadQuota);
+  const [quota, setQuota] = useState<{
+    subscribed: boolean;
+    searchesThisWeek: number;
+    weeklyLimit: number | null;
+    leadsPerSearch: number;
+  } | null>(null);
   const [checking, setChecking] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
@@ -50,6 +57,7 @@ function FindLeadsPage() {
         return;
       }
       setUserEmail(data.user.email ?? null);
+      runQuota({}).then(setQuota).catch(() => {});
       // Prefill from profile
       supabase
         .from("profiles")
@@ -65,7 +73,7 @@ function FindLeadsPage() {
           setChecking(false);
         });
     });
-  }, [navigate]);
+  }, [navigate, runQuota]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -80,9 +88,10 @@ function FindLeadsPage() {
     setSavedIds({});
     try {
       const result = await runFindLeads({
-        data: { businessType, product, targetCustomer, count: 8 },
+        data: { businessType, product, targetCustomer },
       });
       setLeads(result.leads as Lead[]);
+      runQuota({}).then(setQuota).catch(() => {});
     } catch (err: any) {
       setError(err.message ?? "Failed to find leads");
     } finally {
@@ -96,6 +105,8 @@ function FindLeadsPage() {
     try {
       await runSetSaved({ data: { id: lead.id, saved: true } });
       setSavedIds((s) => ({ ...s, [lead.id!]: true }));
+      // A saved lead lives in the Lead list now — take it out of the search results.
+      setLeads((current) => current.filter((l) => l.id !== lead.id));
     } catch (err: any) {
       setError(err.message ?? "Failed to save lead");
     } finally {
@@ -119,6 +130,22 @@ function FindLeadsPage() {
           <p className="mt-2 text-sm text-muted-foreground">
             Signed in as {userEmail}
           </p>
+          {quota && (
+            <p className="mt-1 text-sm text-muted-foreground">
+              {quota.subscribed ? (
+                <>Plus plan — unlimited searches, ~{quota.leadsPerSearch} leads per search.</>
+              ) : (
+                <>
+                  Free plan — {Math.max(0, (quota.weeklyLimit ?? 0) - quota.searchesThisWeek)} of{" "}
+                  {quota.weeklyLimit} searches left this week, {quota.leadsPerSearch} leads per
+                  search.{" "}
+                  <Link to="/pricing" className="italic underline underline-offset-4">
+                    Upgrade to Plus →
+                  </Link>
+                </>
+              )}
+            </p>
+          )}
         </div>
         <button
           onClick={handleSignOut}
@@ -161,7 +188,16 @@ function FindLeadsPage() {
             className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-foreground"
           />
         </div>
-        {error && <p className="text-sm text-destructive">{error}</p>}
+        {error && (
+          <p className="text-sm text-destructive">
+            {error}{" "}
+            {error.toLowerCase().includes("limit") && (
+              <Link to="/pricing" className="italic underline underline-offset-4">
+                See Plus →
+              </Link>
+            )}
+          </p>
+        )}
         <button
           type="submit"
           disabled={loading}

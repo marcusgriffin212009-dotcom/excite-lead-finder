@@ -207,7 +207,7 @@ function Index() {
             Subscription
           </p>
           <h2 className="mt-4 text-5xl italic md:text-6xl">
-            Fifty dollars, monthly.
+            $49.99, monthly.
           </h2>
           <p className="mx-auto mt-6 max-w-xl leading-relaxed text-muted-foreground">
             Begin with a fortnight, gratis. After that, a modest sum for

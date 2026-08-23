@@ -2,12 +2,16 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
+const FREE_WEEKLY_SEARCHES = 2;
+const FREE_LEADS_PER_SEARCH = 8;
+const PLUS_LEADS_PER_SEARCH = 20;
+
 const InputSchema = z.object({
   businessType: z.string().min(1).max(200),
   product: z.string().min(1).max(500),
   targetCustomer: z.string().min(1).max(500),
-  count: z.number().int().min(1).max(15).default(8),
 });
+
 
 const LeadSchema = z.object({
   company_name: z.string(),
@@ -27,7 +31,34 @@ export const findLeads = createServerFn({ method: "POST" })
     const apiKey = process.env.LOVABLE_API_KEY;
     if (!apiKey) throw new Error("LOVABLE_API_KEY not configured");
 
+    // Plan gating: free users get 2 searches a week and 8 leads per search.
+    const email = (context.claims as { email?: string } | undefined)?.email ?? null;
+    const { getSubscriptionStatus } = await import("./billing.server");
+    let subscribed = false;
+    try {
+      subscribed = (await getSubscriptionStatus(email)).subscribed;
+    } catch (err) {
+      console.error("[find-leads] subscription check failed", err);
+    }
+
+    if (!subscribed) {
+      const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      const { count } = await context.supabase
+        .from("lead_searches")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", context.userId)
+        .gte("created_at", weekAgo);
+      if ((count ?? 0) >= FREE_WEEKLY_SEARCHES) {
+        throw new Error(
+          `Free plan limit reached: ${FREE_WEEKLY_SEARCHES} lead searches per week. Upgrade to Plus for unlimited searches.`,
+        );
+      }
+    }
+
+    const leadCount = subscribed ? PLUS_LEADS_PER_SEARCH : FREE_LEADS_PER_SEARCH;
+
     // Fetch existing leads for this user to avoid duplicates
+
     const { data: existing } = await context.supabase
       .from("leads")
       .select("company_name, website")
@@ -49,7 +80,7 @@ export const findLeads = createServerFn({ method: "POST" })
 - What I sell: ${data.product}
 - Who I want to sell to: ${data.targetCustomer}
 
-${excludeList ? `IMPORTANT: Do NOT include any of these companies — they have already been suggested previously. Return only NEW, different companies:\n${excludeList}\n\n` : ""}Return a JSON object with a "leads" array of ${data.count} real companies. Each lead has:
+${excludeList ? `IMPORTANT: Do NOT include any of these companies — they have already been suggested previously. Return only NEW, different companies:\n${excludeList}\n\n` : ""}Return a JSON object with a "leads" array of ${leadCount} real companies. Each lead has:
 {
   "company_name": string,
   "contact_person": string | null (a plausible role-based name if known, else null),
@@ -134,6 +165,11 @@ Return ONLY {"leads": [...]}. No markdown fences.`;
       inserted = (ins as any) ?? [];
     }
 
+    // Log the search for weekly quota accounting
+    await context.supabase
+      .from("lead_searches")
+      .insert({ user_id: context.userId, lead_count: inserted.length || leads.length });
+
     // Also persist onboarding answers to profile
     await context.supabase
       .from("profiles")
@@ -146,8 +182,36 @@ Return ONLY {"leads": [...]}. No markdown fences.`;
       })
       .eq("id", context.userId);
 
-    return { leads: inserted.length > 0 ? inserted : leads };
+    return { leads: inserted.length > 0 ? inserted : leads, subscribed };
   });
+
+export const getLeadQuota = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const email = (context.claims as { email?: string } | undefined)?.email ?? null;
+    const { getSubscriptionStatus } = await import("./billing.server");
+    let subscribed = false;
+    try {
+      subscribed = (await getSubscriptionStatus(email)).subscribed;
+    } catch (err) {
+      console.error("[lead-quota] subscription check failed", err);
+    }
+
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const { count } = await context.supabase
+      .from("lead_searches")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", context.userId)
+      .gte("created_at", weekAgo);
+
+    return {
+      subscribed,
+      searchesThisWeek: count ?? 0,
+      weeklyLimit: subscribed ? null : FREE_WEEKLY_SEARCHES,
+      leadsPerSearch: subscribed ? PLUS_LEADS_PER_SEARCH : FREE_LEADS_PER_SEARCH,
+    };
+  });
+
 
 export const setLeadSaved = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
