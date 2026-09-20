@@ -106,12 +106,18 @@ function AuthPage() {
     <div className="mx-auto flex min-h-[calc(100vh-140px)] max-w-md items-center px-6 py-12">
       <div className="w-full bg-card p-10 text-card-foreground">
         <h1 className="text-3xl">
-          {mode === "signup" ? "Start your free trial" : "Welcome back"}
+          {mode === "signup"
+            ? "Start your free trial"
+            : mode === "forgot"
+              ? "Reset your password"
+              : "Welcome back"}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
           {mode === "signup"
             ? "14 days free. No card required."
-            : "Sign in to find your next leads."}
+            : mode === "forgot"
+              ? "Enter your email and we'll send you a reset link."
+              : "Sign in to find your next leads."}
         </p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
@@ -136,26 +142,43 @@ function AuthPage() {
               className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-foreground"
             />
           </div>
-          <div>
-            <label className="block text-sm">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
-              className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-foreground"
-            />
-          </div>
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={remember}
-              onChange={(e) => setRemember(e.target.checked)}
-              className="h-4 w-4 border border-border"
-            />
-            <span>Remember me</span>
-          </label>
+          {mode !== "forgot" && (
+            <div>
+              <label className="block text-sm">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={6}
+                className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-foreground"
+              />
+              {mode === "signin" && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode("forgot");
+                    setError(null);
+                    setInfo(null);
+                  }}
+                  className="mt-1 text-xs underline text-muted-foreground"
+                >
+                  Forgot password?
+                </button>
+              )}
+            </div>
+          )}
+          {mode !== "forgot" && (
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={remember}
+                onChange={(e) => setRemember(e.target.checked)}
+                className="h-4 w-4 border border-border"
+              />
+              <span>Remember me</span>
+            </label>
+          )}
 
 
           {error && <p className="text-sm text-destructive">{error}</p>}
