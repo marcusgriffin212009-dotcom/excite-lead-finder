@@ -228,8 +228,12 @@ function RootComponent() {
         const { error } = await supabase.auth.getUser();
         if (error) await supabase.auth.signOut({ scope: "local" });
       }
+
+      cleanup = () => subscription?.unsubscribe();
     })();
-  }, []);
+    let cleanup: (() => void) | undefined;
+    return () => cleanup?.();
+  }, [navigate]);
 
 
 
