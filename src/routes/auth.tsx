@@ -74,7 +74,13 @@ function AuthPage() {
     setInfo(null);
     setRememberMe(remember);
     try {
-      if (mode === "signup") {
+      if (mode === "forgot") {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (error) throw error;
+        setInfo("If an account exists for that email, a password reset link is on its way.");
+      } else if (mode === "signup") {
         const { error } = await supabase.auth.signUp({
           email,
           password,
