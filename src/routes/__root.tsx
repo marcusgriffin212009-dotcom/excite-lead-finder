@@ -198,6 +198,7 @@ function RootComponent() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    let cleanup: (() => void) | undefined;
     void (async () => {
       const { enforceRememberMe } = await import("../lib/remember");
       const { supabase } = await import("@/integrations/supabase/client");
@@ -231,7 +232,6 @@ function RootComponent() {
 
       cleanup = () => subscription?.unsubscribe();
     })();
-    let cleanup: (() => void) | undefined;
     return () => cleanup?.();
   }, [navigate]);
 
