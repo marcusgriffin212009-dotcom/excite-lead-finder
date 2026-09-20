@@ -189,9 +189,31 @@ function AuthPage() {
             disabled={loading}
             className="w-full rounded-md bg-primary px-4 py-2.5 text-primary-foreground hover:opacity-90 disabled:opacity-50"
           >
-            {loading ? "Please wait..." : mode === "signup" ? "Create account" : "Sign in"}
+            {loading
+              ? "Please wait..."
+              : mode === "signup"
+                ? "Create account"
+                : mode === "forgot"
+                  ? "Send reset link"
+                  : "Sign in"}
           </button>
         </form>
+
+        {mode === "forgot" && (
+          <p className="mt-6 text-center text-sm">
+            Remembered it?{" "}
+            <button
+              onClick={() => {
+                setMode("signin");
+                setError(null);
+                setInfo(null);
+              }}
+              className="underline"
+            >
+              Back to sign in
+            </button>
+          </p>
+        )}
 
         <p className="mt-6 text-center text-sm">
           {mode === "signup" ? "Already have an account?" : "New to leadlurex?"}{" "}
