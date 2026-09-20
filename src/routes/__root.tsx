@@ -200,6 +200,14 @@ function RootComponent() {
       const { enforceRememberMe } = await import("../lib/remember");
       const { supabase } = await import("@/integrations/supabase/client");
       await enforceRememberMe(() => supabase.auth.signOut());
+      // If the stored session's refresh token is stale (e.g. after the backend
+      // was offline), every page load fails with "Invalid Refresh Token".
+      // Verify the session and clear it locally when it can no longer be used.
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        const { error } = await supabase.auth.getUser();
+        if (error) await supabase.auth.signOut({ scope: "local" });
+      }
     })();
   }, []);
 
