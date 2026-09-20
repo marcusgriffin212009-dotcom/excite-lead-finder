@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useNavigate,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -194,11 +195,31 @@ function SiteFooter() {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    let cleanup: (() => void) | undefined;
     void (async () => {
       const { enforceRememberMe } = await import("../lib/remember");
       const { supabase } = await import("@/integrations/supabase/client");
+
+      // Password-recovery links can land on any page (the redirect target is
+      // not always preserved). Detect the recovery token and route the user
+      // to the reset page, wherever they arrived.
+      let subscription: { unsubscribe: () => void } | null = null;
+      if (
+        window.location.hash.includes("type=recovery") &&
+        !window.location.pathname.startsWith("/reset-password")
+      ) {
+        navigate({ to: "/reset-password", replace: true });
+      }
+      const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+        if (event === "PASSWORD_RECOVERY") {
+          navigate({ to: "/reset-password" });
+        }
+      });
+      subscription = sub.subscription;
+
       await enforceRememberMe(() => supabase.auth.signOut());
       // If the stored session's refresh token is stale (e.g. after the backend
       // was offline), every page load fails with "Invalid Refresh Token".
@@ -208,8 +229,11 @@ function RootComponent() {
         const { error } = await supabase.auth.getUser();
         if (error) await supabase.auth.signOut({ scope: "local" });
       }
+
+      cleanup = () => subscription?.unsubscribe();
     })();
-  }, []);
+    return () => cleanup?.();
+  }, [navigate]);
 
 
 
