@@ -53,8 +53,16 @@ function AuthPage() {
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
       if (session) go();
     });
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) go();
+    supabase.auth.getSession().then(async ({ data }) => {
+      if (data.session) {
+        const { error } = await supabase.auth.getUser();
+        if (error) {
+          // Stale refresh token — clear it so the user can sign in again.
+          await supabase.auth.signOut({ scope: "local" });
+          return;
+        }
+        go();
+      }
     });
     return () => sub.subscription.unsubscribe();
   }, [navigate, next]);
