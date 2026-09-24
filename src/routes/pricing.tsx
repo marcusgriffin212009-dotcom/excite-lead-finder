@@ -1,17 +1,20 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { checkSubscription, createCheckout, customerPortal } from "@/lib/billing.functions";
 
 export const Route = createFileRoute("/pricing")({
+  validateSearch: (s: Record<string, unknown>): { checkout?: boolean } => ({
+    checkout: s.checkout === "1" || s.checkout === "true",
+  }),
   head: () => ({
     meta: [
       { title: "Pricing — leadlurex Plus, $49.99 a month" },
       {
         name: "description",
         content:
-          "Free trial with 2 lead searches a week, or leadlurex Plus at $49.99 a month for unlimited searches and 20 leads per search. Cancel anytime.",
+          "Free plan with 2 lead searches a week, or leadlurex Plus at $49.99 a month for unlimited searches and 20 leads per search. Cancel anytime.",
       },
       { property: "og:title", content: "Pricing — leadlurex Plus" },
       {
@@ -27,9 +30,11 @@ export const Route = createFileRoute("/pricing")({
 
 function PricingPage() {
   const navigate = useNavigate();
+  const { checkout } = Route.useSearch();
   const runCheck = useServerFn(checkSubscription);
   const runCheckout = useServerFn(createCheckout);
   const runPortal = useServerFn(customerPortal);
+  const checkoutStarted = useRef(false);
 
   const [signedIn, setSignedIn] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState(true);
@@ -63,21 +68,36 @@ function PricingPage() {
     void refresh();
   }, [refresh]);
 
-  const handleUpgrade = async () => {
-    if (!signedIn) {
-      navigate({ to: "/auth", search: { next: "/pricing" } as never });
-      return;
-    }
+  const startCheckout = useCallback(async () => {
     setBusy(true);
     setError(null);
     try {
       const res = await runCheckout({ data: { origin: window.location.origin } });
-      if (res.url) window.open(res.url, "_blank");
+      if (!res.url) throw new Error("Stripe did not return a checkout URL");
+      // A full-page redirect is more reliable than window.open, especially on mobile
+      // and after returning from the authentication flow.
+      window.location.assign(res.url);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not start checkout");
-    } finally {
       setBusy(false);
     }
+  }, [runCheckout]);
+
+  useEffect(() => {
+    // A visitor who chose Plus before creating an account returns here after
+    // authentication and is sent straight to Stripe Checkout.
+    if (checkout && signedIn && !loadingStatus && !status?.subscribed && !checkoutStarted.current) {
+      checkoutStarted.current = true;
+      void startCheckout();
+    }
+  }, [checkout, signedIn, loadingStatus, status?.subscribed, startCheckout]);
+
+  const handleUpgrade = async () => {
+    if (!signedIn) {
+      navigate({ to: "/auth", search: { next: "/pricing?checkout=1" } as never });
+      return;
+    }
+    await startCheckout();
   };
 
   const handleManage = async () => {
@@ -85,10 +105,9 @@ function PricingPage() {
     setError(null);
     try {
       const res = await runPortal({ data: { origin: window.location.origin } });
-      if (res.url) window.open(res.url, "_blank");
+      if (res.url) window.location.assign(res.url);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not open billing");
-    } finally {
       setBusy(false);
     }
   };
@@ -103,8 +122,7 @@ function PricingPage() {
         </p>
         <h1 className="mt-6 text-5xl italic">Pricing</h1>
         <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-          Start free. Upgrade when the leads start earning their keep. Cancel any
-          time you wish &mdash; no calls, no letters, no ceremony.
+          Choose the plan that fits your business. Upgrade to Plus for the full lead-finding experience, with secure monthly billing through Stripe.
         </p>
       </header>
 
@@ -112,7 +130,7 @@ function PricingPage() {
 
       <div className="mt-14 grid gap-8 md:grid-cols-2">
         <section className="border border-border p-8">
-          <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Free trial</p>
+          <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Free plan</p>
           <h2 className="mt-4 text-4xl italic">$0</h2>
           <p className="mt-2 text-sm text-muted-foreground">For getting a feel of it.</p>
           <ul className="mt-8 space-y-3 text-sm leading-relaxed">
@@ -126,7 +144,7 @@ function PricingPage() {
               to="/auth"
               className="mt-10 inline-block border border-foreground px-6 py-3 italic hover:bg-foreground hover:text-background"
             >
-              Create an account →
+              Create a free account →
             </Link>
           )}
           {signedIn && !subscribed && (
@@ -138,7 +156,7 @@ function PricingPage() {
 
         <section className="border-2 border-foreground bg-card p-8 text-card-foreground">
           <div className="flex items-baseline justify-between">
-            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Plus</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Plus — full access</p>
             {subscribed && (
               <span className="border border-foreground px-2 py-1 text-[11px] uppercase tracking-[0.2em]">
                 Your plan
@@ -148,7 +166,7 @@ function PricingPage() {
           <h2 className="mt-4 text-4xl italic">
             $49.99 <span className="text-base not-italic text-muted-foreground">/ month</span>
           </h2>
-          <p className="mt-2 text-sm text-muted-foreground">Billed monthly. Cancel anytime.</p>
+          <p className="mt-2 text-sm text-muted-foreground">Billed monthly through Stripe. Cancel anytime.</p>
           <ul className="mt-8 space-y-3 text-sm leading-relaxed">
             <li>— Unlimited lead searches</li>
             <li>— About 20 leads generated per search</li>
@@ -181,10 +199,10 @@ function PricingPage() {
                 disabled={busy}
                 className="bg-primary px-6 py-3 text-primary-foreground italic hover:opacity-90 disabled:opacity-50"
               >
-                {busy ? "Opening checkout…" : signedIn ? "Upgrade to Plus →" : "Sign up for Plus →"}
+                {busy ? "Opening checkout…" : signedIn ? "Subscribe to Plus →" : "Sign up for Plus →"}
               </button>
               <p className="mt-4 text-xs text-muted-foreground">
-                Secure checkout. Cancel any time from this page.
+                Secure Stripe Checkout. Your subscription renews monthly until canceled.
               </p>
             </div>
           )}
