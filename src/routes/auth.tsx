@@ -199,7 +199,7 @@ function AuthPage() {
             {loading
               ? "Please wait..."
               : mode === "signup"
-                ? "Create account"
+                ? plusFlow ? "Continue to payment" : "Create account"
                 : mode === "forgot"
                   ? "Send reset link"
                   : "Sign in"}
@@ -228,7 +228,7 @@ function AuthPage() {
             onClick={() => setMode(mode === "signup" ? "signin" : "signup")}
             className="underline"
           >
-            {mode === "signup" ? "Sign in" : "Start free trial"}
+            {mode === "signup" ? "Sign in" : plusFlow ? "Create account" : "Start free trial"}
           </button>
         </p>
       </div>
