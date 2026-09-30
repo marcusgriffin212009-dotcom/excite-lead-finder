@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { listSavedLeads, setLeadSaved } from "@/lib/leads.functions";
+import { checkSubscription } from "@/lib/billing.functions";
 
 export const Route = createFileRoute("/lead-list")({
   head: () => ({
@@ -33,6 +34,7 @@ function LeadListPage() {
   const navigate = useNavigate();
   const runList = useServerFn(listSavedLeads);
   const runSetSaved = useServerFn(setLeadSaved);
+  const runCheck = useServerFn(checkSubscription);
 
   const [checking, setChecking] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
@@ -53,7 +55,13 @@ function LeadListPage() {
         .eq("id", data.user.id)
         .maybeSingle();
       const ends = p?.trial_ends_at ?? null;
-      const active = ends ? new Date(ends).getTime() > Date.now() : false;
+      let paid = false;
+      try {
+        paid = (await runCheck({})).subscribed;
+      } catch {
+        paid = false;
+      }
+      const active = paid || (ends ? new Date(ends).getTime() > Date.now() : false);
       setTrialEndsAt(ends);
       setHasAccess(active);
       setChecking(false);
@@ -69,7 +77,7 @@ function LeadListPage() {
         }
       }
     });
-  }, [navigate, runList]);
+  }, [navigate, runList, runCheck]);
 
   const handleRemove = async (id: string) => {
     try {
@@ -96,8 +104,8 @@ function LeadListPage() {
         </p>
         <h1 className="mt-6 text-5xl italic">Lead list</h1>
         <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-          Your saved leads live here. It's part of the paid plan &mdash; fifty
-          dollars a month, after the free trial.
+          Your saved leads live here. It's part of leadlurex Plus &mdash; $49.99
+          a month, cancel anytime.
         </p>
         {trialEndsAt && (
           <p className="mt-4 text-sm text-muted-foreground">
@@ -106,10 +114,10 @@ function LeadListPage() {
         )}
         <div className="mt-10">
           <Link
-            to="/"
+            to="/pricing"
             className="border border-foreground px-6 py-3 italic hover:bg-foreground hover:text-background"
           >
-            See the plan →
+            Subscribe to Plus →
           </Link>
         </div>
       </div>
