@@ -23,6 +23,7 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const navigate = useNavigate();
   const { next } = Route.useSearch();
+  const plusFlow = !!next && next.includes("checkout");
   const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -107,17 +108,23 @@ function AuthPage() {
       <div className="w-full bg-card p-10 text-card-foreground">
         <h1 className="text-3xl">
           {mode === "signup"
-            ? "Start your free trial"
+            ? plusFlow
+              ? "Create your Plus account"
+              : "Start your free trial"
             : mode === "forgot"
               ? "Reset your password"
               : "Welcome back"}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
           {mode === "signup"
-            ? "14 days free. No card required."
+            ? plusFlow
+              ? "leadlurex Plus — $49.99/month. Next you'll enter payment securely with Stripe."
+              : "14 days free. No card required."
             : mode === "forgot"
               ? "Enter your email and we'll send you a reset link."
-              : "Sign in to find your next leads."}
+              : plusFlow
+                ? "Sign in to continue to Plus checkout."
+                : "Sign in to find your next leads."}
         </p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
@@ -192,7 +199,7 @@ function AuthPage() {
             {loading
               ? "Please wait..."
               : mode === "signup"
-                ? "Create account"
+                ? plusFlow ? "Continue to payment" : "Create account"
                 : mode === "forgot"
                   ? "Send reset link"
                   : "Sign in"}
@@ -221,7 +228,7 @@ function AuthPage() {
             onClick={() => setMode(mode === "signup" ? "signin" : "signup")}
             className="underline"
           >
-            {mode === "signup" ? "Sign in" : "Start free trial"}
+            {mode === "signup" ? "Sign in" : plusFlow ? "Create account" : "Start free trial"}
           </button>
         </p>
       </div>

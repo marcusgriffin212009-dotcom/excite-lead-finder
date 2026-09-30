@@ -6,7 +6,7 @@ import { checkSubscription, createCheckout, customerPortal } from "@/lib/billing
 
 export const Route = createFileRoute("/pricing")({
   validateSearch: (s: Record<string, unknown>): { checkout?: boolean } => ({
-    checkout: s.checkout === "1" || s.checkout === "true",
+    checkout: s.checkout === "1" || s.checkout === 1 || s.checkout === "true" || s.checkout === true,
   }),
   head: () => ({
     meta: [
