@@ -9,7 +9,7 @@ import {
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -123,7 +123,32 @@ function TopBar() {
   );
 }
 
+function useSignedInEmail() {
+  const [email, setEmail] = useState<string | null>(null);
+  useEffect(() => {
+    let unsub: (() => void) | undefined;
+    void (async () => {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data } = await supabase.auth.getSession();
+      setEmail(data.session?.user.email ?? null);
+      const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+        setEmail(session?.user.email ?? null);
+      });
+      unsub = () => sub.subscription.unsubscribe();
+    })();
+    return () => unsub?.();
+  }, []);
+  return email;
+}
+
 function SiteHeader() {
+  const email = useSignedInEmail();
+  const navigate = useNavigate();
+  const handleSignOut = async () => {
+    const { supabase } = await import("@/integrations/supabase/client");
+    await supabase.auth.signOut();
+    navigate({ to: "/" });
+  };
   return (
     <header className="border-b border-border bg-background">
       <TopBar />
@@ -143,12 +168,23 @@ function SiteHeader() {
             <Link to="/find-leads" className="italic hover:underline underline-offset-4">Find Leads</Link>
             <Link to="/lead-list" className="italic hover:underline underline-offset-4">Lead List</Link>
             <Link to="/pricing" className="italic hover:underline underline-offset-4">Pricing</Link>
-            <Link
-              to="/auth"
-              className="border border-foreground px-4 py-1.5 italic hover:bg-foreground hover:text-background"
-            >
-              Sign in →
-            </Link>
+            {email ? (
+              <button
+                type="button"
+                onClick={handleSignOut}
+                title={email}
+                className="border border-foreground px-4 py-1.5 italic hover:bg-foreground hover:text-background"
+              >
+                Sign out
+              </button>
+            ) : (
+              <Link
+                to="/auth"
+                className="border border-foreground px-4 py-1.5 italic hover:bg-foreground hover:text-background"
+              >
+                Sign in →
+              </Link>
+            )}
           </nav>
         </div>
       </div>
