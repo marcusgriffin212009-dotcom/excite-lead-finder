@@ -29,13 +29,10 @@ function Index() {
         <div className="mx-auto grid max-w-6xl gap-10 px-6 py-16 md:grid-cols-12 md:py-24">
           <div className="md:col-span-7 fade-up">
             <p className="mb-6 text-xs uppercase tracking-[0.4em] text-muted-foreground">
-              &sect; AI Lead Generation, established 2026
+              &sect; AI LEAD GENERATION, ESTABLISHED 2026
             </p>
             <h1 className="text-[3.25rem] leading-[0.98] md:text-[5.5rem]">
-              The quiet art of{" "}
-              <span className="italic">finding&nbsp;the</span>
-              <br />
-              <span className="italic">right</span> person to sell to.
+              Find Leads where no one is looking{" "}
             </h1>
             <p className="mt-8 max-w-xl text-lg leading-relaxed text-muted-foreground">
               <span className="text-foreground">leadlurex</span> is a small,
@@ -59,7 +56,7 @@ function Index() {
               </Link>
             </div>
             <p className="mt-6 text-xs uppercase tracking-[0.3em] text-muted-foreground">
-              Fourteen days, gratis · then fifty dollars a month
+              FOURTEEN DAYS, GRATIS · THEN FIFTY DOLLARS A MONTH
             </p>
           </div>
 
